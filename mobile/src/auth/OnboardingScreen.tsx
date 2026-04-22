@@ -19,43 +19,53 @@ const appBadge = require('../../assets/adaptive-icon.png');
 const slides = [
   {
     key: '1',
-    eyebrow: 'FAST ALERTS',
-    badge: 'Priority routing',
-    title: 'Quick Emergency Reporting',
-    desc: 'Report emergencies with one tap. Video, photos, and location are captured automatically.',
+    eyebrow: "HERE'S MY LOCATION",
+    badge: 'One-tap panic flow',
+    title: 'Isang Pindutin Lang, Papunta Na ang Tulong',
+    desc: 'Big red panic button with live GPS sharing so barangay responders and your family can locate you faster.',
     color: '#ef4444',
     icon: '🚨',
-    highlights: ['One-tap dispatch', 'Auto-captured evidence'],
+    highlights: ['Exact location sharing', 'Shareable rescue link'],
   },
   {
     key: '2',
-    eyebrow: 'LIVE MAP',
-    badge: 'Real-time updates',
-    title: 'Live Location Tracking',
-    desc: 'Share your live location with family and responders so help can find you faster.',
+    eyebrow: 'VIDEO REPORT',
+    badge: 'Slow-network ready',
+    title: 'Photo and Video Evidence for Real Emergencies',
+    desc: 'Capture flood, fire, accident, or crime reports with GPS attached to every submission.',
     color: '#3b82f6',
-    icon: '📍',
-    highlights: ['Responder visibility', 'Family tracking'],
+    icon: '📹',
+    highlights: ['Evidence plus GPS', 'Field-ready reporting'],
   },
   {
     key: '3',
-    eyebrow: 'FAMILY CIRCLE',
-    badge: 'Check-in ready',
-    title: 'Family Safety Check-In',
-    desc: 'Create a safety circle so loved ones can confirm status and coordinate during emergencies.',
-    color: '#22c55e',
-    icon: '👨‍👩‍👧',
-    highlights: ['Status check-ins', 'Shared emergency view'],
+    eyebrow: 'OFFLINE / SMS MODE',
+    badge: 'Low-signal support',
+    title: 'Humihingi Pa Rin ng Tulong Kahit Mahina ang Internet',
+    desc: 'Queue alerts and fallback communication flows help residents send emergency signals during outages.',
+    color: '#f59e0b',
+    icon: '📴',
+    highlights: ['Offline-first alerts', 'SMS-ready escalation'],
   },
   {
     key: '4',
-    eyebrow: 'BARANGAY SIGNAL',
-    badge: 'Community alerts',
-    title: 'Barangay Alerts',
-    desc: 'Receive critical advisories, evacuation routes, and instructions when every second matters.',
-    color: '#f59e0b',
-    icon: '📢',
-    highlights: ['Evacuation guidance', 'Verified local updates'],
+    eyebrow: 'FAMILY + AI ASSIST',
+    badge: '24/7 guidance',
+    title: 'Protect Your Family While Help Is On The Way',
+    desc: 'Track loved ones, run family check-ins, and surface first-aid guidance while responders are en route.',
+    color: '#22c55e',
+    icon: '🤖',
+    highlights: ['Family safety check-in', 'AI first-aid support'],
+  },
+  {
+    key: '5',
+    eyebrow: 'DATA PRIVACY',
+    badge: 'Under development',
+    title: 'Built for Columbio and Koronadal Communities',
+    desc: 'EmergencyTool-NET is being refined with safer GPS handling, no background tracking, and automatic cleanup after 72 hours.',
+    color: '#8b5cf6',
+    icon: '🛡️',
+    highlights: ['72-hour retention', 'No background tracking'],
   },
 ];
 
@@ -119,7 +129,7 @@ export const OnboardingScreen = ({ navigation }: any) => {
                   <Image source={appBadge} style={styles.brandIcon} />
                   <View>
                     <Text style={styles.brandTitle}>EmergencyTool</Text>
-                    <Text style={styles.brandSubtitle}>Community-ready response</Text>
+                    <Text style={styles.brandSubtitle}>Columbio and Koronadal pilot</Text>
                   </View>
                 </View>
 

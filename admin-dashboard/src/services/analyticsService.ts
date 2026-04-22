@@ -1,8 +1,14 @@
 import api from './api';
+import type { DashboardOverview } from '../shared/types/dashboard.types';
 
 export const analyticsService = {
   getStats: async () => {
     const { data } = await api.get('/analytics/stats');
+    return data;
+  },
+
+  getDashboardOverview: async (limit = 6): Promise<DashboardOverview> => {
+    const { data } = await api.get(`/analytics/dashboard?limit=${limit}`);
     return data;
   },
 

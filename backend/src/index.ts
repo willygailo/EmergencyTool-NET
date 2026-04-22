@@ -18,9 +18,8 @@ import hazardRoutes from './hazard/hazardRoutes';
 import responderRoutes from './responder/responderRoutes';
 import analyticsRoutes from './analytics/analyticsRoutes';
 import { database } from './config/database';
-import { ensureEmergencySchema } from './emergency/emergencySchema';
+import { ensureAppSchema } from './config/schemaBootstrap';
 import { uploadsRootDir } from './emergency/emergencyUpload';
-import { ensureUserSchema } from './users/userSchema';
 
 const app = express();
 const httpServer = createServer(app);
@@ -90,8 +89,7 @@ const PORT = process.env.PORT || 3000;
 const start = async () => {
   try {
     await database.connect();
-    await ensureUserSchema();
-    await ensureEmergencySchema();
+    await ensureAppSchema();
     console.log('✅ Database connected');
     
     httpServer.listen(PORT, () => {

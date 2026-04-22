@@ -46,7 +46,15 @@ export const broadcastController = {
 
   createBroadcast: async (req: Request, res: Response) => {
     try {
-      const { title, message, barangay, type = 'alert', priority = 'normal', targetAll = false } = req.body;
+      const {
+        title,
+        message,
+        barangay,
+        type = 'alert',
+        priority = 'normal',
+        targetAll = false,
+        expiresAt = null,
+      } = req.body;
       const userId = (req as any).user?.userId;
       
       if (!title || !message) {
@@ -56,10 +64,20 @@ export const broadcastController = {
       const id = uuidv4();
       
       const result = await pool.query(
-        `INSERT INTO broadcasts (id, title, message, barangay, type, priority, created_by, target_all) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        `INSERT INTO broadcasts (id, title, message, barangay, type, priority, created_by, target_all, expires_at) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
          RETURNING *`,
-        [id, title, message, targetAll ? null : barangay, type, priority, userId, targetAll]
+        [
+          id,
+          title,
+          message,
+          targetAll ? null : barangay,
+          type,
+          priority,
+          userId,
+          Boolean(targetAll),
+          expiresAt,
+        ]
       );
       
       res.status(201).json(result.rows[0]);

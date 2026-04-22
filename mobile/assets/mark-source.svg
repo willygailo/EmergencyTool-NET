@@ -1,0 +1,29 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="dropShadow" x="214" y="126" width="596" height="748" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="20"/>
+      <feGaussianBlur stdDeviation="22"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.0156863 0 0 0 0 0.0901961 0 0 0 0 0.168627 0 0 0 0.28 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#dropShadow)" transform="translate(512 488) scale(1.25) translate(-512 -488)">
+    <path
+      d="M512 190C402 190 300 232 300 352C300 526 390 662 512 786C634 662 724 526 724 352C724 232 622 190 512 190Z"
+      fill="#F8FAFC"
+      stroke="#F7B538"
+      stroke-width="14"
+    />
+    <path
+      d="M512 250C429 250 360 315 360 398C360 510 468 621 512 660C556 621 664 510 664 398C664 315 595 250 512 250Z"
+      fill="#D7263D"
+    />
+    <circle cx="512" cy="402" r="82" fill="#F8FAFC"/>
+    <rect x="486" y="346" width="52" height="112" rx="18" fill="#D7263D"/>
+    <rect x="456" y="376" width="112" height="52" rx="18" fill="#D7263D"/>
+  </g>
+</svg>

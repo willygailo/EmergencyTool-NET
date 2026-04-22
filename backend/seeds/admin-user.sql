@@ -4,7 +4,7 @@
 INSERT INTO users (id, email, password_hash, first_name, last_name, phone, barangay, role, created_at, updated_at)
 VALUES (
   gen_random_uuid(),
-  'admin@emergencytool.local',
+  'admin@emergencytool.com',
   '$2b$10$rQZ8Kx1x1x1x1x1x1x1x.O1x1x1x1x1x1x1x1x1x1x1x1xO',  -- bcrypt hash of "admin123"
   'Admin',
   'User',

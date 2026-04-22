@@ -17,10 +17,10 @@ const seedAdmin = async () => {
       `INSERT INTO users (email, password_hash, first_name, last_name, phone, barangay, role) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) 
        ON CONFLICT (email) DO NOTHING`,
-      ['admin@emergencytool.local', passwordHash, 'Admin', 'User', '09123456789', 'Main', 'admin']
+      ['admin@emergencytool.com', passwordHash, 'Admin', 'User', '09123456789', 'Main', 'admin']
     );
     
-    console.log('✅ Admin user created: admin@emergencytool.local');
+    console.log('✅ Admin user created: admin@emergencytool.com');
     console.log('🔑 Password: admin123');
   } catch (error) {
     console.error('Error seeding admin:', error);
