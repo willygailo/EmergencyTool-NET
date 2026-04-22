@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "EmergencyTool",
+    "slug": "emergencytool",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ef4444"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emergencytool.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "EmergencyTool needs camera access to record emergency videos",
+        "NSLocationWhenInUseUsageDescription": "EmergencyTool needs your location to share with responders",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "EmergencyTool needs background location access for safety tracking",
+        "NSMicrophoneUsageDescription": "EmergencyTool needs microphone access for voice emergency reports",
+        "NSContactsUsageDescription": "EmergencyTool needs contacts access for emergency contacts"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ef4444"
+      },
+      "package": "com.emergencytool.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "SEND_SMS",
+        "READ_CONTACTS",
+        "WRITE_CONTACTS",
+        "CALL_PHONE",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-location",
+      "expo-camera",
+      "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "EmergencyTool needs photo access to upload hazard evidence",
+          "cameraPermission": "EmergencyTool needs camera access to take photos"
+        }
+      ]
+    ]
+  }
+}
