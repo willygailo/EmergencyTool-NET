@@ -7,13 +7,6 @@ import { useFamilySafety } from '../hooks/useFamilySafety';
 import { useNotifications } from '../hooks/useNotifications';
 import { useOfflineStorage } from '../hooks/useOfflineStorage';
 
-const communityHighlights = [
-  'Columbio, Sultan Kudarat',
-  'Koronadal, South Cotabato',
-  'Offline and SMS fallback',
-  '72-hour auto-delete',
-];
-
 const trustPromises = [
   'Location only during emergencies',
   'No background tracking',
@@ -107,23 +100,6 @@ export const HomeScreen = ({ navigation }: any) => {
               <Text style={styles.locationRefresh}>Refresh</Text>
             </TouchableOpacity>
           )}
-        </View>
-
-        <View style={styles.communityCard}>
-          <Text style={styles.communityEyebrow}>EmergencyTool-NET</Text>
-          <Text style={styles.communityTitle}>Technology para sa Kaligtasan ng Bawat Barangay</Text>
-          <Text style={styles.communityDesc}>
-            Built for residents, families, PWDs, seniors, barangay officials, and responders in Columbio and Koronadal.
-            One tap can trigger location sharing, emergency routing, and faster community response.
-          </Text>
-
-          <View style={styles.communityChipWrap}>
-            {communityHighlights.map((item) => (
-              <View key={item} style={styles.communityChip}>
-                <Text style={styles.communityChipText}>{item}</Text>
-              </View>
-            ))}
-          </View>
         </View>
 
         <TouchableOpacity style={styles.panicButton} onPress={handlePanic}>
@@ -223,13 +199,6 @@ export const HomeScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.footer}>
-          <View style={styles.developerNoteCard}>
-            <Text style={styles.developerNoteTitle}>Developer's Note</Text>
-            <Text style={styles.developerNoteText}>
-              App is still under development. GPS and location improvements are ongoing while the team completes key emergency flows.
-            </Text>
-            <Text style={styles.developerContactText}>Willy Jr. Carnasa Gailo • 0970-309-2060 • willygailo45@gmail.com</Text>
-          </View>
           <Text style={styles.footerText}>
             EmergencyTool-NET v1.0 | {isOnline ? '🟢 Online' : '📴 Offline'}
           </Text>
@@ -255,13 +224,6 @@ const styles = StyleSheet.create({
   locationIcon: { fontSize: 16, marginRight: 8 },
   locationText: { flex: 1, fontSize: 14, color: '#6b7280' },
   locationRefresh: { fontSize: 12, color: '#3b82f6', fontWeight: '500' },
-  communityCard: { backgroundColor: '#0f172a', borderRadius: 20, padding: 18, marginBottom: 18 },
-  communityEyebrow: { fontSize: 12, fontWeight: '700', color: '#fca5a5', textTransform: 'uppercase', letterSpacing: 1.2 },
-  communityTitle: { fontSize: 22, fontWeight: '700', color: '#fff', marginTop: 8 },
-  communityDesc: { fontSize: 14, lineHeight: 21, color: '#cbd5e1', marginTop: 10 },
-  communityChipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
-  communityChip: { backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
-  communityChipText: { color: '#fff', fontSize: 12, fontWeight: '600' },
   panicButton: { backgroundColor: '#ef4444', padding: 24, borderRadius: 20, alignItems: 'center', marginBottom: 24, shadowColor: '#ef4444', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
   panicIcon: { fontSize: 40, marginBottom: 8 },
   panicText: { color: '#fff', fontSize: 32, fontWeight: 'bold', letterSpacing: 4 },
@@ -302,10 +264,6 @@ const styles = StyleSheet.create({
   preparednessIcon: { fontSize: 28, marginBottom: 8 },
   preparednessLabel: { fontSize: 11, fontWeight: '600', color: '#374151', textAlign: 'center' },
   footer: { alignItems: 'center', marginTop: 16 },
-  developerNoteCard: { width: '100%', backgroundColor: '#fff7ed', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#fdba74' },
-  developerNoteTitle: { fontSize: 14, fontWeight: '700', color: '#9a3412', marginBottom: 6 },
-  developerNoteText: { fontSize: 13, lineHeight: 19, color: '#7c2d12' },
-  developerContactText: { fontSize: 12, lineHeight: 18, color: '#9a3412', marginTop: 8, fontWeight: '600' },
   footerText: { fontSize: 12, color: '#9ca3af' },
 });
 
