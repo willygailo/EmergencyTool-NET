@@ -28,12 +28,15 @@ import { EvacuationRouteScreen } from './src/barangay/EvacuationRouteScreen';
 import { ProfileScreen } from './src/profile/ProfileScreen';
 import { ProfileSettingsScreen } from './src/profile/ProfileSettingsScreen';
 import { HouseholdInfoScreen } from './src/profile/HouseholdInfoScreen';
+import { ProfileInfoScreen } from './src/profile/ProfileInfoScreen';
+import { ContactSupportScreen } from './src/profile/ContactSupportScreen';
 import { HazardMapScreen } from './src/hazard/HazardMapScreen';
 import { HazardReportScreen } from './src/hazard/HazardReportScreen';
 import { EmergencyKitScreen } from './src/preparedness/EmergencyKitScreen';
 import { FirstAidScreen } from './src/preparedness/FirstAidScreen';
 import { ResponderHomeScreen } from './src/responder/ResponderHomeScreen';
 import { AssignmentScreen } from './src/responder/AssignmentScreen';
+import { useBarangayAlerts } from './src/barangay/useBarangayAlerts';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,50 +70,55 @@ const normalizeAuthUser = (user: any) => ({
   createdAt: user?.createdAt || user?.created_at || null,
 });
 
-const MainTabs = () => (
-  <Tab.Navigator
-    screenOptions={{
-      headerShown: false,
-      tabBarStyle: { height: 70, paddingBottom: 10, paddingTop: 10, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e5e7eb' },
-      tabBarActiveTintColor: '#ef4444',
-      tabBarInactiveTintColor: '#9ca3af',
-      tabBarLabelStyle: { fontSize: 12, fontWeight: '500' },
-    }}
-  >
-    <Tab.Screen
-      name="HomeTab"
-      component={HomeScreen}
-      options={{
-        tabBarLabel: 'Home',
-        tabBarIcon: ({ focused }) => <TabIcon icon="🏠" focused={focused} />,
+const MainTabs = () => {
+  const userBarangay = useSelector((state: RootState) => state.auth.user?.barangay);
+  const { activeAlertCount } = useBarangayAlerts({ barangay: userBarangay, autoLoad: true });
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { height: 70, paddingBottom: 10, paddingTop: 10, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e5e7eb' },
+        tabBarActiveTintColor: '#ef4444',
+        tabBarInactiveTintColor: '#9ca3af',
+        tabBarLabelStyle: { fontSize: 12, fontWeight: '500' },
       }}
-    />
-    <Tab.Screen
-      name="Alerts"
-      component={BarangayAlertScreen}
-      options={{
-        tabBarLabel: 'Alerts',
-        tabBarIcon: ({ focused }) => <TabIcon icon="🔔" focused={focused} badge={2} />,
-      }}
-    />
-    <Tab.Screen
-      name="Family"
-      component={FamilySafetyScreen}
-      options={{
-        tabBarLabel: 'Family',
-        tabBarIcon: ({ focused }) => <TabIcon icon="👨‍👩‍👧" focused={focused} />,
-      }}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={ProfileScreen}
-      options={{
-        tabBarLabel: 'Profile',
-        tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
-      }}
-    />
-  </Tab.Navigator>
-);
+    >
+      <Tab.Screen
+        name="HomeTab"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ focused }) => <TabIcon icon="🏠" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Alerts"
+        component={BarangayAlertScreen}
+        options={{
+          tabBarLabel: 'Alerts',
+          tabBarIcon: ({ focused }) => <TabIcon icon="🔔" focused={focused} badge={activeAlertCount} />,
+        }}
+      />
+      <Tab.Screen
+        name="Family"
+        component={FamilySafetyScreen}
+        options={{
+          tabBarLabel: 'Family',
+          tabBarIcon: ({ focused }) => <TabIcon icon="👨‍👩‍👧" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const AuthStack = ({ initialRouteName }: { initialRouteName: 'Onboarding' | 'Login' }) => (
   <Stack.Navigator
@@ -253,6 +261,54 @@ const MainStack = () => (
       component={ProfileSettingsScreen}
       options={{
         title: 'Profile Settings',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="NotificationsCenter"
+      component={ProfileInfoScreen}
+      options={{
+        title: 'Notifications',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="PrivacySecurity"
+      component={ProfileInfoScreen}
+      options={{
+        title: 'Privacy & Security',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="ConnectionStatus"
+      component={ProfileInfoScreen}
+      options={{
+        title: 'Connection Status',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="HelpFaq"
+      component={ProfileInfoScreen}
+      options={{
+        title: 'Help & FAQ',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="AboutApp"
+      component={ProfileInfoScreen}
+      options={{
+        title: 'About',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen
+      name="ContactSupport"
+      component={ContactSupportScreen}
+      options={{
+        title: 'Contact Support',
         ...screenOptions
       }}
     />

@@ -9,7 +9,6 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  Linking,
   Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +20,15 @@ import type { RootState } from '../store/store';
 import { useNotifications } from '../hooks/useNotifications';
 import { useOfflineStorage } from '../hooks/useOfflineStorage';
 import { loadProfileAvatar, removeProfileAvatar, saveProfileAvatar } from './profileAvatarStorage';
+import { APP_VERSION } from './profileContent';
+
+const notificationStatusLabels: Record<string, string> = {
+  granted: 'Enabled',
+  denied: 'Denied',
+  unavailable: 'Unavailable',
+  undetermined: 'Not yet requested',
+  unsupported_in_expo_go: 'Expo Go limitation',
+};
 
 const normalizeProfile = (profile: any, avatarUri?: string | null) => ({
   id: profile?.id,
@@ -33,7 +41,17 @@ const normalizeProfile = (profile: any, avatarUri?: string | null) => ({
   avatarUri: avatarUri ?? profile?.avatarUri ?? null,
 });
 
-export const ProfileSettingsScreen = () => {
+const profilesMatch = (left: any, right: any) =>
+  left?.id === right?.id &&
+  left?.email === right?.email &&
+  left?.firstName === right?.firstName &&
+  left?.lastName === right?.lastName &&
+  left?.phone === right?.phone &&
+  left?.barangay === right?.barangay &&
+  left?.role === right?.role &&
+  (left?.avatarUri || null) === (right?.avatarUri || null);
+
+export const ProfileSettingsScreen = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const authUser = useSelector((state: RootState) => state.auth.user);
   const { permissionStatus, expoPushToken, unreadCount } = useNotifications();
@@ -58,19 +76,23 @@ export const ProfileSettingsScreen = () => {
         const data = await authApi.getProfile();
         const normalized = normalizeProfile(data, storedAvatar || authUser?.avatarUri);
         setProfileForm(normalized);
-        dispatch(updateUser(normalized));
+        if (!profilesMatch(authUser, normalized)) {
+          dispatch(updateUser(normalized));
+        }
       } catch {
         const storedAvatar = await loadProfileAvatar();
         const normalized = normalizeProfile(authUser, storedAvatar || authUser?.avatarUri);
         setProfileForm(normalized);
-        dispatch(updateUser(normalized));
+        if (!profilesMatch(authUser, normalized)) {
+          dispatch(updateUser(normalized));
+        }
       } finally {
         setLoadingProfile(false);
       }
     };
 
     loadProfile();
-  }, [authUser, dispatch]);
+  }, [authUser?.id, dispatch]);
 
   const updateProfileField = (field: string, value: string) => {
     setProfileForm((prev) => ({ ...prev, [field]: value }));
@@ -216,10 +238,10 @@ export const ProfileSettingsScreen = () => {
   };
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:support@emergencytool.local?subject=EmergencyTool%20Support').catch(() => {
-      Alert.alert('Support', 'Support email client is not available on this device.');
-    });
+    navigation.navigate('ContactSupport');
   };
+
+  const formattedNotificationStatus = notificationStatusLabels[permissionStatus] || permissionStatus;
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -401,7 +423,7 @@ export const ProfileSettingsScreen = () => {
           <View style={styles.card}>
             <View style={styles.statusRow}>
               <Text style={styles.statusLabel}>Notifications</Text>
-              <Text style={styles.statusValue}>{permissionStatus}</Text>
+              <Text style={styles.statusValue}>{formattedNotificationStatus}</Text>
             </View>
             <View style={styles.statusRow}>
               <Text style={styles.statusLabel}>Unread Alerts</Text>
@@ -427,6 +449,14 @@ export const ProfileSettingsScreen = () => {
                 <Text style={styles.secondaryButtonText}>Clear Offline Queue</Text>
               </TouchableOpacity>
             ) : null}
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('NotificationsCenter')}>
+              <Text style={styles.secondaryButtonText}>Open Notifications</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('ConnectionStatus')}>
+              <Text style={styles.secondaryButtonText}>Open Connection Status</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -435,7 +465,7 @@ export const ProfileSettingsScreen = () => {
           <View style={styles.card}>
             <View style={styles.infoRow}>
               <Text style={styles.infoTitle}>EmergencyTool</Text>
-              <Text style={styles.infoDescription}>Version 1.0.0</Text>
+              <Text style={styles.infoDescription}>Version {APP_VERSION}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoTitle}>Privacy & Security</Text>
@@ -449,6 +479,18 @@ export const ProfileSettingsScreen = () => {
                 Use this screen to update account info, change password, and review app status.
               </Text>
             </View>
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('PrivacySecurity')}>
+              <Text style={styles.secondaryButtonText}>Open Privacy & Security</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('HelpFaq')}>
+              <Text style={styles.secondaryButtonText}>Open Help & FAQ</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('AboutApp')}>
+              <Text style={styles.secondaryButtonText}>Open About</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.secondaryButton} onPress={handleContactSupport}>
               <Text style={styles.secondaryButtonText}>Contact Support</Text>

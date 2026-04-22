@@ -7,11 +7,12 @@ import { authApi } from '../auth/authApi';
 import { useNotifications } from '../hooks/useNotifications';
 import { useOfflineStorage } from '../hooks/useOfflineStorage';
 import { loadProfileAvatar } from './profileAvatarStorage';
+import { APP_VERSION } from './profileContent';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
-  const { unreadCount, permissionStatus } = useNotifications();
+  const { unreadCount } = useNotifications();
   const { isOnline, pendingCount } = useOfflineStorage();
   const [storedAvatar, setStoredAvatar] = useState<string | null>(null);
 
@@ -57,17 +58,17 @@ export const ProfileScreen = ({ navigation }: any) => {
     {
       title: 'Settings',
       items: [
-        { icon: '🔔', label: 'Notifications', screen: 'ProfileSettings', badge: unreadCount > 0 ? unreadCount : null },
-        { icon: '🔒', label: 'Privacy & Security', screen: 'ProfileSettings', badge: null },
-        { icon: '📶', label: isOnline ? 'Connection: Online' : 'Connection: Offline', screen: 'ProfileSettings', badge: null },
+        { icon: '🔔', label: 'Notifications', screen: 'NotificationsCenter', badge: unreadCount > 0 ? unreadCount : null },
+        { icon: '🔒', label: 'Privacy & Security', screen: 'PrivacySecurity', badge: null },
+        { icon: '📶', label: isOnline ? 'Connection: Online' : 'Connection: Offline', screen: 'ConnectionStatus', badge: null },
       ]
     },
     {
       title: 'Support',
       items: [
-        { icon: '❓', label: 'Help & FAQ', screen: 'ProfileSettings', badge: null },
-        { icon: '📞', label: 'Contact Support', screen: 'ProfileSettings', badge: null },
-        { icon: 'ℹ️', label: 'About', screen: 'ProfileSettings', badge: null },
+        { icon: '❓', label: 'Help & FAQ', screen: 'HelpFaq', badge: null },
+        { icon: '📞', label: 'Contact Support', screen: 'ContactSupport', badge: null },
+        { icon: 'ℹ️', label: 'About', screen: 'AboutApp', badge: null },
       ]
     },
   ];
@@ -104,11 +105,6 @@ export const ProfileScreen = ({ navigation }: any) => {
             </View>
           </View>
         </View>
-
-        <TouchableOpacity style={styles.settingsShortcut} onPress={() => navigation.navigate('ProfileSettings')}>
-          <Text style={styles.settingsShortcutTitle}>Open Profile Settings</Text>
-          <Text style={styles.settingsShortcutSubtitle}>Update profile, password, app status, and support info</Text>
-        </TouchableOpacity>
 
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
@@ -167,8 +163,8 @@ export const ProfileScreen = ({ navigation }: any) => {
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>EmergencyTool v1.0.0</Text>
-          <Text style={styles.footerText}>© 2026 dev willy jr. carnasa gailo</Text>
+          <Text style={styles.footerText}>EmergencyTool v{APP_VERSION}</Text>
+          <Text style={styles.footerText}>Emergency support, family safety, and preparedness in one app.</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -191,9 +187,6 @@ const styles = StyleSheet.create({
   statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
   statusText: { fontSize: 12, color: '#6b7280' },
   pendingText: { fontSize: 12, color: '#f59e0b', marginLeft: 4 },
-  settingsShortcut: { backgroundColor: '#fff5f5', padding: 16, borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-  settingsShortcutTitle: { fontSize: 16, fontWeight: '700', color: '#b91c1c' },
-  settingsShortcutSubtitle: { marginTop: 4, fontSize: 13, color: '#7f1d1d' },
   statsRow: { backgroundColor: '#fff', padding: 16, borderRadius: 16, flexDirection: 'row', marginBottom: 20, elevation: 2 },
   statItem: { flex: 1, alignItems: 'center' },
   statValue: { fontSize: 24, fontWeight: 'bold', color: '#1f2937' },
