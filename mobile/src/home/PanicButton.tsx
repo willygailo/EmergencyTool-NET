@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Animated, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export const PanicButton = ({ onPress, size = 80 }: { onPress?: () => void; size?: number }) => {
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
@@ -13,6 +14,7 @@ export const PanicButton = ({ onPress, size = 80 }: { onPress?: () => void; size
   };
 
   const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Alert.alert('Emergency', 'Send emergency alert?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Send', style: 'destructive', onPress: onPress }

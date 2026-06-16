@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 
@@ -16,7 +17,7 @@ const seedAdmin = async () => {
     await pool.query(
       `INSERT INTO users (email, password_hash, first_name, last_name, phone, barangay, role) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) 
-       ON CONFLICT (email) DO NOTHING`,
+       ON CONFLICT (email) DO UPDATE SET role = 'admin', password_hash = EXCLUDED.password_hash`,
       ['admin@emergencytool.com', passwordHash, 'Admin', 'User', '09123456789', 'Main', 'admin']
     );
     

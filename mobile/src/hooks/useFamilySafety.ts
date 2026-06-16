@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { familyApi } from '../family/familyApi';
 
 export const useFamilySafety = () => {
-  const dispatch = useDispatch();
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [checkInStatus, setCheckInStatus] = useState<'all_safe' | 'pending' | 'warning'>('pending');
   const [loading, setLoading] = useState(false);

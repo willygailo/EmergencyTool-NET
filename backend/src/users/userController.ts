@@ -149,6 +149,18 @@ export const userController = {
       res.status(500).json({ error: 'Failed to update FCM token' });
     }
   },
+
+  updateExpoPushToken: async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.userId;
+      const { expoPushToken } = req.body;
+      
+      await pool.query('UPDATE users SET expo_push_token = $1 WHERE id = $2', [expoPushToken, userId]);
+      res.json({ message: 'Expo Push token updated' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update Expo Push token' });
+    }
+  },
 };
 
 export default userController;

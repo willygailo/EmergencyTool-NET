@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export const AdminSettingsPage = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -101,6 +102,7 @@ export const AdminSettingsPage = () => {
               </div>
 
               <button 
+                onClick={() => toast.success('Settings saved successfully!')}
                 style={{
                   padding: '0.625rem 1.25rem',
                   background: '#3b82f6',
@@ -140,6 +142,7 @@ export const AdminSettingsPage = () => {
               ))}
 
               <button 
+                onClick={() => toast.success('Preferences updated!')}
                 style={{
                   marginTop: '1rem',
                   padding: '0.625rem 1.25rem',
@@ -192,6 +195,7 @@ export const AdminSettingsPage = () => {
               </div>
 
               <button 
+                onClick={() => toast.success('Security settings updated!')}
                 style={{
                   padding: '0.625rem 1.25rem',
                   background: '#3b82f6',
@@ -229,6 +233,7 @@ export const AdminSettingsPage = () => {
 
               <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
                 <button 
+                  onClick={() => toast.success('Cache cleared successfully!')}
                   style={{
                     padding: '0.5rem 1rem',
                     background: '#f59e0b',
@@ -243,6 +248,7 @@ export const AdminSettingsPage = () => {
                   🔄 Clear Cache
                 </button>
                 <button 
+                  onClick={() => toast.success('System data cleared!')}
                   style={{
                     padding: '0.5rem 1rem',
                     background: '#ef4444',

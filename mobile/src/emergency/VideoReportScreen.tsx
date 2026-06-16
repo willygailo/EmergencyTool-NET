@@ -17,7 +17,9 @@ import { useLocation } from '../hooks/useLocation';
 import { getApiErrorMessage } from '../services/apiErrors';
 import { getEmergencyTypeById } from '../constants/emergencyTypes';
 import { emergencyApi } from './emergencyApi';
-
+import { useOfflineDetector } from '../offline/OfflineDetector';
+import { queueEmergency } from '../offline/SyncQueue';
+import * as SMS from 'expo-sms';
 type MediaAsset = {
   uri: string;
   mimeType?: string | null;
@@ -34,6 +36,7 @@ export const VideoReportScreen = ({ navigation, route }: any) => {
   const [video, setVideo] = useState<MediaAsset | null>(null);
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const { isOnline } = useOfflineDetector();
 
   const requestCameraAccess = async () => {
     if (isWeb) {
@@ -102,7 +105,7 @@ export const VideoReportScreen = ({ navigation, route }: any) => {
 
     setUploading(true);
     try {
-      const result = await emergencyApi.report({
+      const payload = {
         type: emergencyType.id,
         description: description.trim() || undefined,
         latitude: location.latitude,
@@ -114,17 +117,51 @@ export const VideoReportScreen = ({ navigation, route }: any) => {
         videoUri: video?.uri,
         videoName: video?.fileName || 'emergency_video.mp4',
         videoType: video?.mimeType || 'video/mp4',
-      });
+      };
 
-      navigation.replace('AlertSent', {
-        type: emergencyType.id,
-        reportId: result?.id,
-      });
+      if (!isOnline) {
+        // Handle Offline Flow
+        await queueEmergency('EMERGENCY_REPORT', payload);
+        
+        // SMS Fallback
+        const isAvailable = await SMS.isAvailableAsync();
+        if (isAvailable) {
+          Alert.alert(
+            'Offline Mode',
+            'Your report is saved and will auto-sync when internet is restored. Do you want to send an emergency SMS now?',
+            [
+              { text: 'No', style: 'cancel', onPress: () => navigateToSent() },
+              { text: 'Yes, Send SMS', onPress: async () => {
+                  await SMS.sendSMSAsync(
+                    ['911'], // Replace with actual emergency number or contact
+                    `EMERGENCY [${emergencyType.label}]: I need help! My location: https://maps.google.com/?q=${location.latitude},${location.longitude} ${description ? ' - ' + description : ''}`
+                  );
+                  navigateToSent();
+                } 
+              }
+            ]
+          );
+        } else {
+          Alert.alert('Offline Mode', 'Your report is saved locally and will auto-sync when internet is restored.');
+          navigateToSent();
+        }
+      } else {
+        // Handle Online Flow
+        const result = await emergencyApi.report(payload);
+        navigateToSent(result?.id);
+      }
     } catch (error) {
       Alert.alert('Send failed', getApiErrorMessage(error, 'Failed to submit report.'));
     } finally {
       setUploading(false);
     }
+  };
+
+  const navigateToSent = (reportId?: string) => {
+    navigation.replace('AlertSent', {
+      type: emergencyType.id,
+      reportId: reportId,
+    });
   };
 
   return (

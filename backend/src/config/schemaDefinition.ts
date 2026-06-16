@@ -17,7 +17,8 @@ export const schemaStatements = [
   `ALTER TABLE users
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW(),
     ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP,
-    ADD COLUMN IF NOT EXISTS fcm_token TEXT`,
+    ADD COLUMN IF NOT EXISTS fcm_token TEXT,
+    ADD COLUMN IF NOT EXISTS expo_push_token TEXT`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone_unique
     ON users (phone)
     WHERE phone IS NOT NULL AND phone <> ''`,
@@ -60,6 +61,7 @@ export const schemaStatements = [
     video_url TEXT,
     status VARCHAR(20) DEFAULT 'pending',
     priority VARCHAR(20) DEFAULT 'normal',
+    ai_analysis JSONB,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   )`,
@@ -69,6 +71,7 @@ export const schemaStatements = [
     ADD COLUMN IF NOT EXISTS photo_url TEXT,
     ADD COLUMN IF NOT EXISTS video_url TEXT,
     ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'normal',
+    ADD COLUMN IF NOT EXISTS ai_analysis JSONB,
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()`,
   `CREATE TABLE IF NOT EXISTS locations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -104,6 +107,8 @@ export const schemaStatements = [
     last_checkin TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
   )`,
+  `ALTER TABLE family_members
+    ADD COLUMN IF NOT EXISTS relationship VARCHAR(50)`,
   `CREATE TABLE IF NOT EXISTS hazards (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type VARCHAR(50) NOT NULL,

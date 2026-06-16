@@ -527,6 +527,30 @@ start_container() {
   echo "✓ created and started ${name}"
 }
 
+cleanup() {
+  echo ""
+  echo "🛑 Shutting down services..."
+  docker stop emergency-postgres emergency-redis >/dev/null 2>&1 || true
+
+  for pid_var in backend_pid admin_pid metro_pid; do
+    pid_value="${!pid_var:-}"
+    if [ -n "${pid_value}" ]; then
+      kill "${pid_value}" 2>/dev/null || true
+    fi
+  done
+
+  pkill -P $$ 2>/dev/null || true
+
+  for port in 3000 5173 8081; do
+    lsof -ti:"${port}" 2>/dev/null | xargs -r kill 2>/dev/null || true
+  done
+
+  wait 2>/dev/null || true
+  echo "✓ All services stopped"
+}
+
+trap cleanup EXIT INT TERM HUP
+
 echo "Starting EmergencyTool NET..."
 mkdir -p "${LOG_DIR}"
 check_prerequisites
@@ -543,7 +567,7 @@ ensure_mobile_sdk_dependencies
 if ! start_container emergency-postgres \
   -e POSTGRES_PASSWORD=willygailo29 \
   -e POSTGRES_DB=emergencytool \
-  -p 5433:5432 \
+  -p 5432:5432 \
   -d postgres:15-alpine; then
   echo "❌ failed to start PostgreSQL container emergency-postgres"
   exit 1
@@ -559,17 +583,20 @@ fi
 sync_mobile_env
 
 backend_started="no"
+backend_pid=""
 if backend_is_healthy; then
   echo "✓ backend already healthy on http://localhost:3000"
 elif is_port_in_use 3000; then
   echo "❌ port 3000 is occupied but EmergencyTool backend is not responding"
   print_port_owner 3000
 else
-  (cd "${ROOT_DIR}/backend" && npm run dev > "${LOG_DIR}/backend.log" 2>&1) &
+  (cd "${ROOT_DIR}/backend" && npm run seed && npm run dev > "${LOG_DIR}/backend.log" 2>&1) &
+  backend_pid=$!
   backend_started="yes"
 fi
 
 admin_started="no"
+admin_pid=""
 if admin_is_healthy; then
   echo "✓ admin already healthy on http://localhost:5173"
 elif is_port_in_use 5173; then
@@ -577,6 +604,7 @@ elif is_port_in_use 5173; then
   print_port_owner 5173
 else
   (cd "${ROOT_DIR}/admin-dashboard" && npm run dev -- --port 5173 --strictPort > "${LOG_DIR}/admin.log" 2>&1) &
+  admin_pid=$!
   admin_started="yes"
 fi
 
@@ -645,6 +673,8 @@ fi
 
 echo ""
 echo "Starting Expo Metro..."
-echo "Press Ctrl+C to stop Metro (backend/admin stay running)."
+echo "Press Ctrl+C to stop all services."
 cd "${ROOT_DIR}/mobile"
-npm run start:online
+npm run start:online &
+metro_pid=$!
+wait "${metro_pid}" 2>/dev/null || true

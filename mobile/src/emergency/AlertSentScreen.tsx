@@ -4,7 +4,7 @@ import { useLocation } from '../hooks/useLocation';
 import { getEmergencyTypeById } from '../constants/emergencyTypes';
 
 export const AlertSentScreen = ({ navigation, route }: any) => {
-  const { type } = route.params || {};
+  const { type, reportId } = route.params || {};
   const { location } = useLocation();
   const [progress] = useState(new Animated.Value(0));
   const [sent, setSent] = useState(false);
@@ -108,7 +108,7 @@ export const AlertSentScreen = ({ navigation, route }: any) => {
 
             <TouchableOpacity 
               style={styles.trackButton}
-              onPress={() => navigation.navigate('ResponderTracking')}
+              onPress={() => navigation.navigate('ResponderTracking', { reportId })}
             >
               <Text style={styles.trackButtonText}>📍 Track Responders</Text>
             </TouchableOpacity>

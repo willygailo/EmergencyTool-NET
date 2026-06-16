@@ -13,5 +13,6 @@ router.get('/emergency-contacts', authMiddleware, userController.getEmergencyCon
 router.post('/emergency-contacts', authMiddleware, userController.addEmergencyContact);
 router.delete('/emergency-contacts/:contactId', authMiddleware, userController.removeEmergencyContact);
 router.put('/fcm-token', authMiddleware, userController.updateFcmToken);
+router.put('/expo-push-token', authMiddleware, userController.updateExpoPushToken);
 
 export default router;

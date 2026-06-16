@@ -1,6 +1,8 @@
 import { Router, Response } from 'express';
 import { pool } from '../config/database';
 import { getEmergencyTypeMeta } from '../emergency/emergencyCatalog';
+import redisClient from '../config/redisClient';
+import logger from '../config/logger';
 
 const router = Router();
 
@@ -211,18 +213,35 @@ router.get('/dashboard', async (req, res: Response) => {
       ? Math.min(Math.max(Math.trunc(requestedLimit), 3), 12)
       : 6;
 
-    res.json(await fetchDashboardOverview(limit));
+    const cacheKey = `analytics:dashboard:${limit}`;
+    const cached = await redisClient.get(cacheKey).catch(() => null);
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
+    const data = await fetchDashboardOverview(limit);
+    await redisClient.setEx(cacheKey, 60, JSON.stringify(data)).catch((err) => {
+      logger.warn('Redis cache set failed', { error: err.message });
+    });
+    
+    return res.json(data);
   } catch (error) {
-    console.error('Dashboard analytics error:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard analytics' });
+    logger.error('Dashboard analytics error:', error);
+    return res.status(500).json({ error: 'Failed to fetch dashboard analytics' });
   }
 });
 
 router.get('/stats', async (_req, res: Response) => {
   try {
+    const cacheKey = 'analytics:stats';
+    const cached = await redisClient.get(cacheKey).catch(() => null);
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
     const overview = await fetchDashboardOverview(6);
 
-    res.json({
+    const data = {
       total: overview.summary.totalEmergencies,
       pending: overview.summary.pendingDispatch,
       dispatched: overview.summary.dispatchedCases,
@@ -234,10 +253,16 @@ router.get('/stats', async (_req, res: Response) => {
       barangaysCovered: overview.summary.barangaysCovered,
       averageResolutionMinutes: overview.summary.averageResolutionMinutes,
       byType: overview.byType,
+    };
+    
+    await redisClient.setEx(cacheKey, 60, JSON.stringify(data)).catch((err) => {
+      logger.warn('Redis cache set failed', { error: err.message });
     });
+
+    return res.json(data);
   } catch (error) {
-    console.error('Stats analytics error:', error);
-    res.status(500).json({ error: 'Failed to fetch stats' });
+    logger.error('Stats analytics error:', error);
+    return res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 

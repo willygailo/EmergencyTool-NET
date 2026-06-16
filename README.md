@@ -14,6 +14,15 @@
 
 ---
 
+## ✨ Features
+
+- **🚨 Critical Push Notifications:** Real-time Expo push alerts for hazard/evacuation broadcasts.
+- **📡 Offline-First Resilience:** Emergency reporting sync queue with SMS fallback via `expo-sms`.
+- **🚓 Geospatial Auto-Dispatch:** Backend PostgreSQL Haversine calculation to recommend the closest 3 responders instantly.
+- **⚡ High Performance:** Redis caching layer on heavy analytics endpoints and Winston log rotation.
+
+---
+
 ## ⚡ Quick Start
 
 ```bash

@@ -23,6 +23,13 @@ export interface Emergency {
   agencies: string[];
   photoUrl?: string | null;
   videoUrl?: string | null;
+  aiAnalysis?: {
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    summary: string;
+    recommendedActions: string[];
+    resourceNeeds: string[];
+    hasImmediateHazard: boolean;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }

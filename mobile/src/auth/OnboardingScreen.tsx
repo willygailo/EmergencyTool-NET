@@ -62,7 +62,7 @@ const slides = [
     eyebrow: 'DATA PRIVACY',
     badge: 'Under development',
     title: 'Built for Columbio and Koronadal Communities',
-    desc: 'EmergencyTool-NET is being refined with safer GPS handling, no background tracking, and automatic cleanup after 72 hours.',
+    desc: 'EmergencyTool is being refined with safer GPS handling, no background tracking, and automatic cleanup after 72 hours.',
     color: '#8b5cf6',
     icon: '🛡️',
     highlights: ['72-hour retention', 'No background tracking'],

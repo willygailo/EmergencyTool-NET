@@ -2,6 +2,7 @@ import api from './api';
 import { getEmergencyTypeMeta } from '../shared/constants/emergencyTypes';
 import type { Emergency } from '../shared/types/emergency.types';
 import { resolveMediaUrl } from './mediaUrl';
+import toast from 'react-hot-toast';
 
 type ApiEmergency = {
   id: string;
@@ -31,6 +32,8 @@ type ApiEmergency = {
   agencies?: string[];
   photoUrl?: string | null;
   videoUrl?: string | null;
+  aiAnalysis?: any;
+  ai_analysis?: any;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -65,6 +68,7 @@ export const normalizeEmergency = (record: ApiEmergency): Emergency => {
     agencies: record.agencies || [],
     photoUrl: resolveMediaUrl(record.photoUrl),
     videoUrl: resolveMediaUrl(record.videoUrl),
+    aiAnalysis: record.aiAnalysis || record.ai_analysis || null,
     createdAt: record.createdAt || new Date().toISOString(),
     updatedAt: record.updatedAt || record.createdAt || new Date().toISOString(),
   };
@@ -83,6 +87,13 @@ export const emergencyService = {
 
   updateStatus: async (id: string, status: Emergency['status']): Promise<Emergency> => {
     const { data } = await api.put(`/emergency/reports/${id}/status`, { status });
+    toast.success(`Emergency status updated to ${status}`);
+    return normalizeEmergency(data);
+  },
+
+  runAiAnalysis: async (id: string): Promise<Emergency> => {
+    const { data } = await api.post(`/ai/analyze/${id}`);
+    toast.success('AI analysis regenerated');
     return normalizeEmergency(data);
   },
 };

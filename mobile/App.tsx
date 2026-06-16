@@ -1,13 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './src/store/store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import type { RootState } from './src/store/store';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 import { LoginScreen } from './src/auth/LoginScreen';
 import { RegisterScreen } from './src/auth/RegisterScreen';
@@ -37,16 +39,19 @@ import { FirstAidScreen } from './src/preparedness/FirstAidScreen';
 import { ResponderHomeScreen } from './src/responder/ResponderHomeScreen';
 import { AssignmentScreen } from './src/responder/AssignmentScreen';
 import { useBarangayAlerts } from './src/barangay/useBarangayAlerts';
+import { AIChatScreen } from './src/ai/AIChatScreen';
+
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabIcon = ({ icon, focused, badge }: { icon: string; focused: boolean; badge?: number }) => (
+const TabIcon = ({ name, focused, badge }: { name: string; focused: boolean; badge?: number }) => (
   <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-    <Text style={{ fontSize: 24 }}>{icon}</Text>
+    <Ionicons name={name as any} size={24} color={focused ? '#ef4444' : '#9ca3af'} />
     {badge !== undefined && badge > 0 && (
       <View style={{ position: 'absolute', top: -4, right: -8, backgroundColor: '#ef4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 }}>
-        <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{badge > 9 ? '9+' : badge}</Text>
+        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} />
       </View>
     )}
   </View>
@@ -73,11 +78,27 @@ const normalizeAuthUser = (user: any) => ({
 const MainTabs = () => {
   const userBarangay = useSelector((state: RootState) => state.auth.user?.barangay);
   const { activeAlertCount } = useBarangayAlerts({ barangay: userBarangay, autoLoad: true });
+  const navigation = useNavigation<any>();
+
+  const FloatingPanicButton = () => (
+    <TouchableOpacity 
+      style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#ef4444', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#ef4444', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, marginRight: 8 }} 
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); navigation.navigate('EmergencyType'); }} 
+      activeOpacity={0.8}
+    >
+      <Ionicons name="warning" size={20} color="#fff" />
+    </TouchableOpacity>
+  );
 
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: { backgroundColor: '#fff' },
+        headerTintColor: '#1f2937',
+        headerTitleStyle: { fontWeight: '600' },
+        headerShadowVisible: false,
+        headerRight: () => <FloatingPanicButton />,
         tabBarStyle: { height: 70, paddingBottom: 10, paddingTop: 10, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e5e7eb' },
         tabBarActiveTintColor: '#ef4444',
         tabBarInactiveTintColor: '#9ca3af',
@@ -89,7 +110,7 @@ const MainTabs = () => {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({ focused }) => <TabIcon icon="🏠" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -97,7 +118,7 @@ const MainTabs = () => {
         component={BarangayAlertScreen}
         options={{
           tabBarLabel: 'Alerts',
-          tabBarIcon: ({ focused }) => <TabIcon icon="🔔" focused={focused} badge={activeAlertCount} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="notifications" focused={focused} badge={activeAlertCount} />,
         }}
       />
       <Tab.Screen
@@ -105,7 +126,7 @@ const MainTabs = () => {
         component={FamilySafetyScreen}
         options={{
           tabBarLabel: 'Family',
-          tabBarIcon: ({ focused }) => <TabIcon icon="👨‍👩‍👧" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="people" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -113,7 +134,7 @@ const MainTabs = () => {
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
         }}
       />
     </Tab.Navigator>
@@ -345,6 +366,14 @@ const MainStack = () => (
       }}
     />
     <Stack.Screen 
+      name="AIChat" 
+      component={AIChatScreen}
+      options={{ 
+        title: 'AI Safety Assistant',
+        ...screenOptions
+      }}
+    />
+    <Stack.Screen 
       name="ResponderHome" 
       component={ResponderHomeScreen}
       options={{ 
@@ -363,14 +392,23 @@ const MainStack = () => (
   </Stack.Navigator>
 );
 
+import { usePushNotifications } from './src/hooks/usePushNotifications';
+
 const AppContent = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [isHydratingAuth, setIsHydratingAuth] = useState(true);
   const [authInitialRoute, setAuthInitialRoute] = useState<'Onboarding' | 'Login'>('Onboarding');
 
+  // Register and listen for push notifications
+  usePushNotifications();
+
   useEffect(() => {
     let isMounted = true;
+    
+    // Init local sync queue DB and network observer
+    import('./src/offline/SyncQueue').then(({ initSyncQueue }) => initSyncQueue());
+    import('./src/services/networkObserver').then(({ initNetworkObserver }) => initNetworkObserver());
 
     const hydrateAuth = async () => {
       try {

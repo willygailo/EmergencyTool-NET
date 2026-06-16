@@ -80,6 +80,36 @@ export const broadcastController = {
         ]
       );
       
+      // Send push notification asynchronously
+      (async () => {
+        try {
+          // Import here to avoid circular dependencies if any
+          const { sendPushNotification } = await import('../notifications/pushNotificationService');
+          
+          let tokensQuery = 'SELECT expo_push_token FROM users WHERE expo_push_token IS NOT NULL';
+          const tokensParams: any[] = [];
+          
+          if (!targetAll && barangay) {
+            tokensQuery += ' AND barangay = $1';
+            tokensParams.push(barangay);
+          }
+          
+          const usersResult = await pool.query(tokensQuery, tokensParams);
+          const pushTokens = usersResult.rows.map((row: any) => row.expo_push_token).filter(Boolean);
+          
+          if (pushTokens.length > 0) {
+            await sendPushNotification(
+              pushTokens,
+              `[${priority.toUpperCase()}]: ${title}`,
+              message,
+              { broadcastId: id, type }
+            );
+          }
+        } catch (pushErr) {
+          console.error('Failed to dispatch push notifications:', pushErr);
+        }
+      })();
+      
       res.status(201).json(result.rows[0]);
     } catch (error) {
       console.error('Create broadcast error:', error);

@@ -94,6 +94,10 @@ export const authApi = {
   getStoredToken: getSessionToken,
   getRememberedCredentials,
   clearSessionToken,
+  updateExpoPushToken: async (expoPushToken: string) => {
+    const { data } = await authAxios.put('/users/expo-push-token', { expoPushToken });
+    return data;
+  },
 };
 
 export default authAxios;

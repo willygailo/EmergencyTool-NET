@@ -26,7 +26,7 @@ export const AssignmentScreen = ({ route, navigation }: any) => {
 
   const loadAssignment = async () => {
     try {
-      const { data } = await api.get(`/responder/assignments/${assignmentId || '1'}`);
+      const { data } = await api.get(`/responders/assignments/${assignmentId || '1'}`);
       setAssignment(data);
     } catch (error) {
       setAssignment({
@@ -46,7 +46,7 @@ export const AssignmentScreen = ({ route, navigation }: any) => {
 
   const handleUpdateStatus = async (newStatus: string) => {
     try {
-      await api.put(`/responder/assignments/${assignmentId}/status`, { status: newStatus });
+      await api.put(`/responders/assignments/${assignmentId}/status`, { status: newStatus });
       Alert.alert('Success', `Status updated to ${newStatus.replace('_', ' ')}`);
       navigation.goBack();
     } catch (error) {

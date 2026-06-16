@@ -80,9 +80,9 @@ export const LoginPage = () => {
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444', marginBottom: '0.5rem' }}>
-            🚨 EmergencyTool-NET
+            EmergencyTool
           </h1>
-          <p style={{ color: '#6b7280' }}>Admin Dashboard Login</p>
+          <p style={{ color: '#6b7280' }}>Admin Dashboard</p>
         </div>
 
         <form onSubmit={handleLogin}>

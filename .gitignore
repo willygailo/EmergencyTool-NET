@@ -45,3 +45,24 @@ ipa/
 
 # Misc
 .cache/
+
+# Expo & React Native
+.expo/
+.expo-shared/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Admin Dashboard
+admin-dashboard/dist/
+admin-dashboard/build/
+admin-dashboard/.next/
+admin-dashboard/out/
+
+# Backend
+backend/dist/
+backend/logs/

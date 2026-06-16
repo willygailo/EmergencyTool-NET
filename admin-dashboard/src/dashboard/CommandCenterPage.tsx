@@ -15,20 +15,14 @@ const statusColors: Record<string, string> = {
   cancelled: '#6b7280',
 };
 
-const projectHighlights = [
-  'One-tap panic alerts',
-  'Offline and SMS fallback',
-  'AI first-aid guidance',
-  'Family safety check-ins',
-  '72-hour data retention',
-  'No background tracking',
-];
-
-const developerProfile = {
-  name: 'Willy Jr. Carnasa Gailo',
-  phone: '0970-309-2060',
-  email: 'willygailo45@gmail.com',
-};
+// const projectHighlights = [
+//   'One-tap panic alerts',
+//   'Offline and SMS fallback',
+//   'AI first-aid guidance',
+//   'Family safety check-ins',
+//   '72-hour data retention',
+//   'No background tracking',
+// ];
 
 const emptyOverview: DashboardOverview = {
   summary: {
@@ -212,63 +206,8 @@ export const CommandCenterPage = () => {
           gap: '1rem',
         }}
       >
-        <div>
-          <p style={{ margin: 0, fontSize: '0.75rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fecaca' }}>
-            EmergencyTool-NET
-          </p>
-          <h2 style={{ fontSize: '1.8rem', lineHeight: 1.2, margin: '0.5rem 0 0.75rem' }}>
-            Technology para sa Kaligtasan ng Bawat Barangay
-          </h2>
-          <p style={{ margin: 0, color: '#fee2e2', maxWidth: '54rem', lineHeight: 1.6 }}>
-            Ops dashboard for fast emergency coordination in Columbio, Sultan Kudarat and Koronadal, South Cotabato.
-            Designed for panic alerts, live location sharing, family safety updates, barangay broadcasts, and responder visibility.
-          </p>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
-            {projectHighlights.map((highlight) => (
-              <span
-                key={highlight}
-                style={{
-                  padding: '0.4rem 0.75rem',
-                  borderRadius: '999px',
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  border: '1px solid rgba(255, 255, 255, 0.16)',
-                  fontSize: '0.8125rem',
-                }}
-              >
-                {highlight}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: 'rgba(15, 23, 42, 0.38)',
-            border: '1px solid rgba(255, 255, 255, 0.14)',
-            borderRadius: '18px',
-            padding: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '0.75rem',
-          }}
-        >
-          <div>
-            <p style={{ margin: 0, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#cbd5f5' }}>
-              Developer Contact
-            </p>
-            <p style={{ margin: '0.5rem 0 0', fontWeight: 700, fontSize: '1rem' }}>{developerProfile.name}</p>
-            <p style={{ margin: '0.35rem 0 0', fontSize: '0.875rem', color: '#e2e8f0' }}>{developerProfile.phone}</p>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: '#e2e8f0' }}>{developerProfile.email}</p>
-          </div>
-
-          <div style={{ fontSize: '0.875rem', color: '#e2e8f0', lineHeight: 1.5 }}>
-            GPS and other core flows are still under active improvement. This board now pulls live data from the database instead of demo-only mock values.
-          </div>
-        </div>
       </div>
-
       <div style={{ marginBottom: '1.5rem' }}>
         <QuickActions />
       </div>

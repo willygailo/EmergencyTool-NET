@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export const PanicScreen = ({ navigation }: any) => {
   const [sending, setSending] = React.useState(false);
 
   const handlePanic = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setSending(true);
     try {
       navigation.replace('EmergencyType');
@@ -25,6 +27,7 @@ export const PanicScreen = ({ navigation }: any) => {
           style={[styles.panicButton, sending && styles.buttonDisabled]} 
           onPress={handlePanic}
           disabled={sending}
+          activeOpacity={0.7}
         >
           <Text style={styles.panicText}>SEND ALERT</Text>
         </TouchableOpacity>

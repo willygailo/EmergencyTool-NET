@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { pool } from '../config/database';
 import { AGENCY_ROUTING, EMERGENCY_TYPES, getEmergencyTypeMeta } from './emergencyCatalog';
 import { ensureBrowserCompatibleVideo } from './mediaTranscoder';
+import { aiService } from '../ai/aiService';
 
 type UploadedFileMap = {
   [fieldname: string]: Express.Multer.File[];
@@ -23,6 +24,7 @@ type EmergencyRow = {
   photo_url: string | null;
   video_url: string | null;
   status: string;
+  ai_analysis?: Record<string, any> | null;
   created_at: string;
   updated_at: string;
   first_name?: string | null;
@@ -133,6 +135,7 @@ const normalizeEmergency = (row: EmergencyRow) => {
     videoUrl: toPublicMediaUrl(row.video_url),
     reporterId: row.user_id,
     responderId: row.responder_id,
+    aiAnalysis: row.ai_analysis || null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     household: row.household_address || row.members != null || row.has_pwd != null || row.has_senior != null || row.has_pregnant != null
@@ -147,7 +150,7 @@ const normalizeEmergency = (row: EmergencyRow) => {
   };
 };
 
-const fetchEmergencyById = async (id: string) => {
+export const fetchEmergencyById = async (id: string) => {
   const result = await pool.query<EmergencyRow>(
     `${EMERGENCY_REPORT_SELECT} WHERE e.id = $1`,
     [id]
@@ -160,7 +163,7 @@ const fetchEmergencyById = async (id: string) => {
   return normalizeEmergency(result.rows[0]);
 };
 
-const emitEmergencyEvent = (req: Request, eventName: 'newEmergency' | 'emergencyUpdate', payload: unknown) => {
+export const emitEmergencyEvent = (req: Request, eventName: 'newEmergency' | 'emergencyUpdate', payload: unknown) => {
   const io = req.app.get('io') as SocketIOServer | undefined;
   if (!io) {
     return;
@@ -276,6 +279,32 @@ export const emergencyController = {
       }
 
       emitEmergencyEvent(req, 'newEmergency', report);
+
+      // Trigger NVIDIA Minimax AI analysis asynchronously in the background
+      setTimeout(async () => {
+        try {
+          console.log(`🤖 Starting background AI analysis for emergency report ${id}...`);
+          const analysisResult = await aiService.analyzeIncidentReport(
+            type,
+            description || '',
+            photo ? `/uploads/emergencies/${photo.filename}` : null
+          );
+
+          await pool.query(
+            'UPDATE emergencies SET ai_analysis = $1, updated_at = NOW() WHERE id = $2',
+            [JSON.stringify(analysisResult), id]
+          );
+
+          const updatedReport = await fetchEmergencyById(id);
+          if (updatedReport) {
+            emitEmergencyEvent(req, 'emergencyUpdate', updatedReport);
+            console.log(`🤖 Background AI analysis complete and emitted for emergency ${id}`);
+          }
+        } catch (err) {
+          console.error(`❌ Background AI analysis failed for emergency ${id}:`, err);
+        }
+      }, 0);
+
       return res.status(201).json(report);
     } catch (error) {
       await cleanupUploadedFiles(uploadedFiles);
@@ -342,7 +371,14 @@ export const emergencyController = {
         return res.status(404).json({ error: 'Report not found.' });
       }
 
-      return res.json(report);
+      // Geospatial auto-dispatch: find 3 closest responders
+      const { dispatchService } = await import('../responder/dispatchService');
+      let recommendedResponders: any[] = [];
+      if (report.latitude && report.longitude) {
+        recommendedResponders = await dispatchService.getClosestResponders(report.latitude, report.longitude, 3);
+      }
+
+      return res.json({ ...report, recommendedResponders });
     } catch (error) {
       console.error('Fetch report error:', error);
       return res.status(500).json({ error: 'Failed to fetch report.' });
