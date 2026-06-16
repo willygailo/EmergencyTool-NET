@@ -186,6 +186,23 @@ current_node_version() {
   fi
 }
 
+node_versions_match() {
+  local current="${1#v}"
+  local desired="${2#v}"
+
+  if [ "${current}" = "${desired}" ]; then
+    return 0
+  fi
+
+  case "${current}" in
+    "${desired}".*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
 load_nvm() {
   if [ -s "${NVM_DIR}/nvm.sh" ]; then
     # shellcheck disable=SC1090
@@ -229,7 +246,7 @@ ensure_node_runtime() {
   desired_version="$(desired_node_version)"
   current_version="$(current_node_version || true)"
 
-  if [ -n "${current_version}" ] && [ "${current_version}" = "${desired_version}" ] && command_exists npm; then
+  if [ -n "${current_version}" ] && node_versions_match "${current_version}" "${desired_version}" && command_exists npm; then
     echo "✓ using Node.js ${current_version}"
     return 0
   fi
@@ -248,7 +265,7 @@ ensure_node_runtime() {
   hash -r
 
   current_version="$(current_node_version || true)"
-  if [ "${current_version}" != "${desired_version}" ] || ! command_exists npm; then
+  if ! node_versions_match "${current_version}" "${desired_version}" || ! command_exists npm; then
     echo "❌ failed to activate Node.js ${desired_version}"
     echo "  Current Node.js: ${current_version:-not installed}"
     exit 1
