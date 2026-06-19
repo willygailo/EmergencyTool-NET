@@ -67,7 +67,8 @@
           "cameraPermission": "EmergencyTool needs camera access to take photos"
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-font"
     ]
   }
 }

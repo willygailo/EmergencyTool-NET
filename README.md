@@ -33,6 +33,53 @@
 
 ---
 
+## 👣 Step-by-Step Manual Run Guide
+
+Kung gusto mong i-run ang project step-by-step nang manual imbes na gumamit ng `start.sh`:
+
+**1. Setup ng Environment Variables**
+Kopyahin ang `.env.example` at gumawa ng `.env` sa bawat folder:
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp admin-dashboard/.env.example admin-dashboard/.env
+cp mobile/.env.example mobile/.env
+```
+*(Sa `mobile/.env`, palitan ang `EXPO_PUBLIC_API_URL` gamit ang local network IP mo imbes na `localhost`).*
+
+**2. I-start ang Database & Redis (Docker)**
+Siguraduhing tumatakbo ang Docker, tapos i-run ang infrastructure:
+```bash
+docker-compose up -d
+```
+
+**3. I-run ang Backend API**
+Sa bagong terminal window, i-start ang Node backend:
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+**4. I-run ang Admin Dashboard**
+Sa isa pang terminal window:
+```bash
+cd admin-dashboard
+npm install
+npm run dev
+```
+
+**5. I-run ang Mobile App (Expo Go)**
+Panghuli, buksan ang Expo sa panibagong terminal window:
+```bash
+cd mobile
+npm install
+npx expo start
+```
+*I-scan ang lalabas na QR code gamit ang Expo Go app sa phone mo!*
+
+---
+
 ## 🔧 Ano ang ginagawa ng `start.sh`?
 
 Ang script ay awtomatikong ina-alagaan ang lahat — mula setup hanggang launch.
@@ -136,6 +183,22 @@ I-start ang Docker Desktop (o `sudo systemctl start docker`), tapos ulitin:
 </details>
 
 <details>
+<summary><strong>🌐 Docker Hub Network Timeout ("context deadline exceeded" o "Client.Timeout")</strong></summary>
+
+Kung nakikita mo ang error na ito habang nag-ra-run ng `docker-compose up -d`:
+`Error response from daemon: Get "https://registry-1.docker.io/v2/": net/http: request canceled`
+
+Ibig sabihin nito ay nahihirapang kumonekta ang Docker sa internet (dahil sa mabagal na connection o rate-limiting ng Docker Hub).
+
+**Solusyon:**
+- Ulitin lang ang command. Ipagpapatuloy ng Docker ang pag-download kung saan ito nahinto:
+  ```bash
+  docker-compose up -d
+  ```
+- Kung ayaw pa rin, i-check ang iyong internet connection o gumamit ng VPN.
+</details>
+
+<details>
 <summary><strong>📵 Hindi makakonekta ang mobile sa backend</strong></summary>
 
 Buksan ang `mobile/.env` at siguraduhing ang `EXPO_PUBLIC_API_URL` ay gumagamit ng iyong **LAN IP** (hindi `localhost`):
@@ -198,6 +261,34 @@ Kung may `nvm` ka:
 nvm install 20.19.4
 nvm use 20.19.4
 cd mobile && npm install
+```
+</details>
+
+<details>
+<summary><strong>📱 App hindi gumagana / nagka-crash sa Expo Go</strong></summary>
+
+Karaniwan itong nangyayari kapag may kulang na peer dependencies, config, o maling setup ng workflow.
+
+I-check ang sumusunod kung bakit ito nagkaka-problema:
+
+1. **Kulang na `babel.config.js`**: Siguraduhing may `babel.config.js` sa loob ng `mobile/` directory. Kung wala, gawa ka ng bago:
+```javascript
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
+```
+
+2. **Kulang na `expo-font`**: Kung nagka-crash dahil sa icons (`@expo/vector-icons`), i-install ang kulang na peer dependency:
+```bash
+cd mobile && npx expo install expo-font
+```
+
+3. **Ghost Native Folders**: Kung naka-generate ang `android/` at `ios/` folders pero gusto mo pa ring gumamit ng Expo Go, burahin ang mga folders na ito. Iniisip kasi ng Expo CLI na gagamit ka ng custom dev client kapag nandiyan sila:
+```bash
+cd mobile && rm -rf android ios
 ```
 </details>
 
