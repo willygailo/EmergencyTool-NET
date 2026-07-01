@@ -691,7 +691,13 @@ fi
 echo ""
 echo "Starting Expo Metro..."
 echo "Press Ctrl+C to stop all services."
+
+# Ensure user-local npm global (@expo/ngrok) is discoverable by Expo CLI
+export NPM_CONFIG_PREFIX="${HOME}/.npm-global"
+export NODE_PATH="${HOME}/.npm-global/lib/node_modules:${NODE_PATH:-}"
+export PATH="${HOME}/.npm-global/bin:${PATH}"
+
 cd "${ROOT_DIR}/mobile"
-npm run start:online &
+EXPO_NO_PROMPTS=1 npm run start:online &
 metro_pid=$!
 wait "${metro_pid}" 2>/dev/null || true

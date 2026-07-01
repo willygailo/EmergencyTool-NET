@@ -69,14 +69,21 @@ npm install
 npm run dev
 ```
 
-**5. I-run ang Mobile App (Expo Go)**
+**5. I-run ang Mobile App (Expo Go via Tunnel)**
 Panghuli, buksan ang Expo sa panibagong terminal window:
 ```bash
 cd mobile
 npm install
-npx expo start
+
+# One-time setup — install ngrok bridge (no sudo needed)
+npm install -g @expo/ngrok@^4.1.0 --prefix ~/.npm-global
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+EXPO_NO_PROMPTS=1 npx expo start --tunnel
 ```
 *I-scan ang lalabas na QR code gamit ang Expo Go app sa phone mo!*
+
+> **Bakit `--tunnel`?** Kung nasa iba't ibang subnet ang phone at laptop (o gumamit ng LTE ang phone), kailangan ng tunnel para makonekta ng Expo Go. Ang `EXPO_NO_PROMPTS=1` ay nag-aalis ng interactive prompt na humahadlang sa automated launch.
 
 ---
 
@@ -137,8 +144,9 @@ Sinisimulan ang mga container sa background:
 
 Pagkatapos tumakbo ang `./start.sh`:
 
-1. **I-scan ang QR code** sa Expo Go app (Android/iOS)
+1. **I-scan ang QR code** sa Expo Go app (Android/iOS) — ang tunnel URL ay awtomatikong lilitaw sa Metro output
 2. **Web preview?** Pindutin ang `w` sa Expo terminal
+3. **Tunnel mode** ay default — ginagamit ang `@expo/ngrok` para gumana kahit magkaibang network ang phone at laptop
 
 ---
 
@@ -261,6 +269,30 @@ Kung may `nvm` ka:
 nvm install 20.19.4
 nvm use 20.19.4
 cd mobile && npm install
+```
+</details>
+
+<details>
+<summary><strong>🚇 Expo Go hung on "The package @expo/ngrok is required to use tunnels..." prompt</strong></summary>
+
+Lumalabas ito kapag sinimulan ng `start.sh` ang Expo nang walang globally-installed na `@expo/ngrok`. Dahil background process ang Metro, walang TTY para sagutin ang interactive prompt — nagfa-freeze na lang.
+
+**One-time fix (walang sudo):**
+```bash
+npm install -g @expo/ngrok@^4.1.0 --prefix ~/.npm-global
+```
+
+Kung gusto mo itong maging permanent sa shell mo, dagdag ito sa `~/.bashrc` o `~/.zshrc`:
+```bash
+export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+export PATH="$HOME/.npm-global/bin:$PATH"
+```
+
+Hindi na kailangan pang gawin ito muli — ang `start.sh` ay awtomatikong nag-e-export ng tamang `PATH` at nagtatakda ng `EXPO_NO_PROMPTS=1` para hindi na humihingi ng confirmation sa susunod.
+
+**Verify na naka-install:**
+```bash
+ls ~/.npm-global/lib/node_modules/@expo/ngrok/index.js
 ```
 </details>
 

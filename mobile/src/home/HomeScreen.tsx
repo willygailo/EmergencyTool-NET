@@ -71,6 +71,7 @@ export const HomeScreen = ({ navigation }: any) => {
   const quickActions = [
     { id: 'location', icon: 'location', label: 'My Location', color: '#3b82f6', screen: 'LocationShare' },
     { id: 'hazard', icon: 'alert-circle', label: 'Hazard Map', color: '#f59e0b', screen: 'HazardMap' },
+    { id: 'optimizer', icon: 'game-controller', label: 'Game Optimizer', color: '#8b5cf6', screen: 'AIGameOptimizer' },
   ];
 
   if (user?.role === 'responder' || user?.role === 'admin') {

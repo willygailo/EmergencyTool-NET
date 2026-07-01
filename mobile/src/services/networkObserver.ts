@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
 import { getQueuedItems, removeFromQueue } from '../offline/SyncQueue';
-import { api } from './api';
+import api from './api';
 
 let isSyncing = false;
 

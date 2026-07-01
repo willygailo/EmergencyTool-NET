@@ -40,8 +40,7 @@ import { ResponderHomeScreen } from './src/responder/ResponderHomeScreen';
 import { AssignmentScreen } from './src/responder/AssignmentScreen';
 import { useBarangayAlerts } from './src/barangay/useBarangayAlerts';
 import { AIChatScreen } from './src/ai/AIChatScreen';
-
-
+import { AIGameOptimizerScreen } from './src/ai/AIGameOptimizerScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -387,6 +386,16 @@ const MainStack = () => (
       options={{ 
         title: 'Assignment',
         ...screenOptions
+      }}
+    />
+    <Stack.Screen 
+      name="AIGameOptimizer" 
+      component={AIGameOptimizerScreen}
+      options={{ 
+        title: 'Game Optimizer (AI)',
+        headerStyle: { backgroundColor: '#0a0a0a' },
+        headerTintColor: '#00ff00',
+        headerTitleStyle: { fontWeight: 'bold' as const },
       }}
     />
   </Stack.Navigator>
